@@ -7,8 +7,8 @@ using System;
  * This class is responsible for simulating
  * an analog clock which starts from the desired time.
  *
- * Hand objects needs to be set, but they are totally optional.
- * All of the hand objects must face the same direction.
+ * Hand objects need to be assigned for visualization.
+ * Also, all of them must be facing the same direction.
  *
  * Initial time values are used to set the starting
  * time of the clock. However, if 'useSystemTime' flag
