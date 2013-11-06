@@ -8,6 +8,7 @@ using System;
  * an analog clock which starts from the desired time.
  *
  * Hand objects needs to be set, but they are totally optional.
+ * All of the hand objects must face the same direction.
  *
  * Initial time values are used to set the starting
  * time of the clock. However, if 'useSystemTime' flag
@@ -34,6 +35,9 @@ public class AnalogClockSimulator : MonoBehaviour
     public bool useSystemTime=true;
     //simulates the second hand with the millisecond resolution
     public bool simulateMilliseconds=true;
+    //reverses the rotation direction of the hands.
+    public bool reverseRotation=false;
+    
     //holds the current time
     private double currentTimeInMilliseconds=0;
 
@@ -42,7 +46,7 @@ public class AnalogClockSimulator : MonoBehaviour
     private const float MAX_SECONDS_IN_HOUR=    60f*60f;
     private const float MAX_SECONDS_IN_DAY=     60f*60f*12f;
 
-    private void Start ()
+    private void Start()
     {
         //set the current time variable
 
@@ -56,13 +60,13 @@ public class AnalogClockSimulator : MonoBehaviour
         else
         {
             //use given initial values and initialize the clock timer
-            currentTimeInMilliseconds=  ((initialHours%12f)*MAX_SECONDS_IN_HOUR)+
-                                        ((initialMinutes%60f)*MAX_SECONDS_IN_MINUTE)+
-                                        (initialSeconds%60f);
+            currentTimeInMilliseconds=  ((initialHours  %12f) * MAX_SECONDS_IN_HOUR)  +
+                                        ((initialMinutes%60f) * MAX_SECONDS_IN_MINUTE)+
+                                          initialSeconds%60f;
         }
     }
 
-    private void Update ()
+    private void Update()
     {
         //add the time elapsed to the latest calculated time
         currentTimeInMilliseconds += Time.deltaTime;
@@ -79,19 +83,19 @@ public class AnalogClockSimulator : MonoBehaviour
     //returns the hour hand angle in degrees by the given time in seconds
     private float getHourAngle(double timeInMilliseconds)
     {
-        return (float)((timeInMilliseconds%MAX_SECONDS_IN_DAY)/(double)MAX_SECONDS_IN_DAY)*-360f;
+        return (float)((timeInMilliseconds%MAX_SECONDS_IN_DAY)/(double)MAX_SECONDS_IN_DAY)*360f;
     }
 
     //returns the minute hand angle in degrees by the given time in seconds
     private float getMinuteAngle(double timeInMilliseconds)
     {
-        return (float)((timeInMilliseconds%MAX_SECONDS_IN_HOUR)/(double)MAX_SECONDS_IN_HOUR)*-360f;
+        return (float)((timeInMilliseconds%MAX_SECONDS_IN_HOUR)/(double)MAX_SECONDS_IN_HOUR)*360f;
     }
 
     //returns the second hand angle in degrees by the given time in seconds
     private float getSecondAngle(double timeInMilliseconds)
     {
-        return (float)((timeInMilliseconds%MAX_SECONDS_IN_MINUTE)/(double)MAX_SECONDS_IN_MINUTE)*-360f;
+        return (float)((timeInMilliseconds%MAX_SECONDS_IN_MINUTE)/(double)MAX_SECONDS_IN_MINUTE)*360f;
     }
 
     //sets the z-axis angle for the given hand object using the target angle in degrees
@@ -99,6 +103,9 @@ public class AnalogClockSimulator : MonoBehaviour
     {
         if(hand!=null)
             //set the euler angles by protecting the original x & y axis values
-            hand.transform.eulerAngles=new Vector3(hand.transform.eulerAngles.x,hand.transform.eulerAngles.y,targetAngle);
+            //if required, reverse the input angle
+            hand.transform.eulerAngles=new Vector3(hand.transform.eulerAngles.x,
+                                                   hand.transform.eulerAngles.y,
+                                                   targetAngle*(reverseRotation?-1f:1f));
     }
 }
